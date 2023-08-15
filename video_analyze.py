@@ -7,12 +7,19 @@ import sys
 from matplotlib import pyplot as plt
 
 test = False
+front_view = True
 if test:
     input_video_name = 'booker_trimmed.mp4'
     give_processing_updates_time = 1
 else:
-    input_video_name = 'scan_video2.avi'
-    give_processing_updates_time = 15
+    if front_view:
+        print('Front view selected!')
+        input_video_name = 'scan_video2.avi'
+        give_processing_updates_time = 15
+    else:
+        print('Side view selected!')
+        input_video_name = 'scan_video1.avi'
+        give_processing_updates_time = 15
 
 camera_frames_per_second = 30
 
