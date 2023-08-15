@@ -39,19 +39,19 @@ out = cv2.VideoWriter(out_filename, cv2.VideoWriter_fourcc(
     'M', 'J', 'P', 'G'), 10, (frame_width, frame_height))
 
 
-final_results_l_shoulder = {'x':[],'y':[],'z':[]}
-final_results_l_hip = {'x':[],'y':[],'z':[]}
-final_results_l_knee = {'x':[],'y':[],'z':[]}
-final_results_r_knee = {'x':[],'y':[],'z':[]}
-final_results_r_shoulder = {'x':[],'y':[],'z':[]}
-final_results_r_hip = {'x':[],'y':[],'z':[]}
-final_results_nose = {'x':[],'y':[],'z':[]}
-final_results_l_wrist = {'x':[],'y':[],'z':[]}
-final_results_r_wrist = {'x':[],'y':[],'z':[]}
-final_results_l_elbow = {'x':[],'y':[],'z':[]}
-final_results_r_elbow = {'x':[],'y':[],'z':[]}
-final_results_l_ankle = {'x':[],'y':[],'z':[]}
-final_results_r_ankle = {'x':[],'y':[],'z':[]}
+final_results_l_shoulder = {'x':[],'y':[],'z':[],'visibility':[]}
+final_results_l_hip = {'x':[],'y':[],'z':[],'visibility':[]}
+final_results_l_knee = {'x':[],'y':[],'z':[],'visibility':[]}
+final_results_r_knee = {'x':[],'y':[],'z':[],'visibility':[]}
+final_results_r_shoulder = {'x':[],'y':[],'z':[],'visibility':[]}
+final_results_r_hip = {'x':[],'y':[],'z':[],'visibility':[]}
+final_results_nose = {'x':[],'y':[],'z':[],'visibility':[]}
+final_results_l_wrist = {'x':[],'y':[],'z':[],'visibility':[]}
+final_results_r_wrist = {'x':[],'y':[],'z':[],'visibility':[]}
+final_results_l_elbow = {'x':[],'y':[],'z':[],'visibility':[]}
+final_results_r_elbow = {'x':[],'y':[],'z':[],'visibility':[]}
+final_results_l_ankle = {'x':[],'y':[],'z':[],'visibility':[]}
+final_results_r_ankle = {'x':[],'y':[],'z':[],'visibility':[]}
 
 frame_ct = 0
 second_processed_count = 0
@@ -74,7 +74,7 @@ while cap.isOpened():
     
     try: 
         nose = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.NOSE]
-
+ 
         l_shoulder = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.LEFT_SHOULDER]
         r_shoulder= results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER]
 
@@ -96,56 +96,75 @@ while cap.isOpened():
         final_results_l_shoulder['x'].append(l_shoulder.x)
         final_results_l_shoulder['y'].append(l_shoulder.y)
         final_results_l_shoulder['z'].append(l_shoulder.z)
+        final_results_l_shoulder['visibility'].append(round(l_shoulder.visibility,2))
 
         final_results_r_shoulder['x'].append(r_shoulder.x)
         final_results_r_shoulder['y'].append(r_shoulder.y)
         final_results_r_shoulder['z'].append(r_shoulder.z)
+        final_results_r_shoulder['visibility'].append(round(r_shoulder.visibility,2))
 
         final_results_l_hip['x'].append(l_hip.x)
         final_results_l_hip['y'].append(l_hip.y)
         final_results_l_hip['z'].append(l_hip.z)
+        final_results_l_hip['visibility'].append(round(l_hip.visibility,2))
 
         final_results_r_hip['x'].append(r_hip.x)
         final_results_r_hip['y'].append(r_hip.y)
         final_results_r_hip['z'].append(r_hip.z)
+        final_results_r_hip['visibility'].append(round(r_hip.visibility,2))
 
         final_results_l_knee['x'].append(l_knee.x)
         final_results_l_knee['y'].append(l_knee.y)
         final_results_l_knee['z'].append(l_knee.z)
+        final_results_l_knee['visibility'].append(round(l_knee.visibility,2))
 
         final_results_r_knee['x'].append(r_knee.x)
         final_results_r_knee['y'].append(r_knee.y)
         final_results_r_knee['z'].append(r_knee.z)
+        final_results_r_knee['visibility'].append(round(r_knee.visibility,2))
 
         final_results_l_ankle['x'].append(l_ankle.x)
         final_results_l_ankle['y'].append(l_ankle.y)
         final_results_l_ankle['z'].append(l_ankle.z)
+        final_results_l_ankle['visibility'].append(round(l_ankle.visibility,2))
 
         final_results_r_ankle['x'].append(r_ankle.x)
         final_results_r_ankle['y'].append(r_ankle.y)
         final_results_r_ankle['z'].append(r_ankle.z)
+        final_results_r_ankle['visibility'].append(round(r_ankle.visibility,2))
 
         final_results_nose['x'].append(nose.x)
         final_results_nose['y'].append(nose.y)
         final_results_nose['z'].append(nose.z)
+        final_results_nose['visibility'].append(round(nose.visibility,2))
 
         final_results_l_elbow['x'].append(l_elbow.x)
         final_results_l_elbow['y'].append(l_elbow.y)
         final_results_l_elbow['z'].append(l_elbow.z)
+        final_results_l_elbow['visibility'].append(l_elbow.visibility)
 
         final_results_r_elbow['x'].append(r_elbow.x)
         final_results_r_elbow['y'].append(r_elbow.y)
         final_results_r_elbow['z'].append(r_elbow.z)
+        final_results_r_elbow['visibility'].append(r_elbow.visibility)
 
         final_results_l_wrist['x'].append(l_wrist.x)
         final_results_l_wrist['y'].append(l_wrist.y)
         final_results_l_wrist['z'].append(l_wrist.z)
+        final_results_l_wrist['visibility'].append(round(l_wrist.visibility,2))
 
         final_results_r_wrist['x'].append(r_wrist.x)
         final_results_r_wrist['y'].append(r_wrist.y)
         final_results_r_wrist['z'].append(r_wrist.z)
+        final_results_r_wrist['visibility'].append(round(r_wrist.visibility,2))
 
-        
+        final_results_dict = {'nose':final_results_nose,
+                                'l_shoulder':final_results_l_shoulder,'r_shoulder':final_results_r_shoulder,
+                                'l_elbow':final_results_l_elbow,'r_elbow':final_results_r_elbow,
+                                'l_wrist':final_results_l_wrist,'r_wrist':final_results_r_wrist,
+                                'l_hip':final_results_l_hip,'r_hip':final_results_r_hip,
+                                'l_knee':final_results_l_knee,'r_knee':final_results_r_knee,
+                                'l_ankle':final_results_l_ankle,'r_ankle':final_results_r_ankle}
 
     
     # Plot pose world landmarks.
@@ -156,6 +175,7 @@ while cap.isOpened():
 
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    # print(results.pose_landmarks)
     mp_drawing.draw_landmarks(
         image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
     out.write(image)
@@ -164,6 +184,15 @@ cap.release()
 out.release()
 
 print('CALCULATING ANGLES...',f'total frames = {frame_ct}')
+
+# Calculate BARD
+
+# shoulder_vec = np.array([np.array(final_results_l_shoulder['x'])-np.array(final_results_r_shoulder['x']),
+# np.array(final_results_l_shoulder['y'])-np.array(final_results_r_shoulder['y']),
+# np.array(final_results_l_shoulder['z'])-np.array(final_results_r_shoulder['z'])])
+
+# camera_vec = 
+
 #angle calculation
 
 mid_hip = calc_midpoint_vec(final_results_l_hip,final_results_r_hip)
@@ -263,6 +292,31 @@ plt.plot(range(len(final_results_l_ankle['x'])),final_results_l_ankle['x'],color
 plt.xlabel("Frame")
 plt.ylabel("position (m)")
 plt.legend(['left ankle x'])
+
+plt.figure(4)
+plt.title('Visibility Score for Markers (upper body)')
+legend = []
+for i,key  in enumerate(final_results_dict):
+    if i<6:
+        plt.plot(range(len(final_results_dict[key]['visibility'])),final_results_dict[key]['visibility'])
+        legend.append(key)
+plt.legend(legend)
+
+plt.figure(5)
+plt.title('Visibility Score for Markers (lower body)')
+legend = []
+for i,key  in enumerate(final_results_dict):
+    if i>6:
+        plt.plot(range(len(final_results_dict[key]['visibility'])),final_results_dict[key]['visibility'])
+        legend.append(key)
+plt.legend(legend)
+# plt.plot(range(len(final_results_r_elbow['visibility'])),final_results_r_elbow['visibility'])
+# plt.plot(range(len(final_results_l_elbow['visibility'])),final_results_l_elbow['visibility'])
+# plt.plot(range(len(final_results_r_shoulder['visibility'])),final_results_r_shoulder['visibility'])
+# plt.plot(range(len(final_results_l_shoulder['visibility'])),final_results_l_shoulder['visibility'])
+# plt.plot(range(len(final_results_r_hip['visibility'])),final_results_r_hip['visibility'])
+# plt.plot(range(len(final_results_l_hip['visibility'])),final_results_l_hip['visibility'])
+# plt.legend(['r_elbow','l_elbow','r_shoulder','l_shoulder','r_hip','l_hip'])
 
 # plt.title('L elbow angle tracking deg')
 # plt.plot(range(len(angle_deg_elbow)),angle_deg_elbow,color='r', label='angle deg')
