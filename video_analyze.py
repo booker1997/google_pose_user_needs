@@ -11,7 +11,7 @@ if test:
     input_video_name = 'booker_trimmed.mp4'
     give_processing_updates_time = 1
 else:
-    input_video_name = 'scan_video1.avi'
+    input_video_name = 'scan_video2.avi'
     give_processing_updates_time = 15
 
 camera_frames_per_second = 30
