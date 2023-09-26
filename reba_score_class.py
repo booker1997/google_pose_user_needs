@@ -134,10 +134,10 @@ class RebaScoreMIT:
 
         :return: Score A, [neck_score, trunk_score, leg_score]
         '''
-        neck_score, trunk_score, leg_score, load_score = 0, 0, 0, 0
+        neck_score, trunk_score, r_leg_score,l_leg_score, load_score = 0, 0, 0, 0,0
 
         # Neck position
-        if 10 <= self.angle_dict['neck'] <= 20 :
+        if 0 <= self.angle_dict['neck'] <= 20 :
             neck_score +=1
         else:
             neck_score +=2
@@ -145,7 +145,7 @@ class RebaScoreMIT:
         # neck_score +=1 if self.body['neck_side'] else 0
 
         # Trunk position
-        if 0 <= self.angle_dict['trunk_angle'] <= 1:
+        if 0 <= self.angle_dict['trunk_angle'] <= 5:
             trunk_score +=1
         elif self.angle_dict['trunk_angle'] <= 20:
             trunk_score +=2
@@ -160,14 +160,14 @@ class RebaScoreMIT:
         # leg_score += 2 if self.angle_dict['legs_walking'] else 1
         # Legs adjust
         if 30 <= self.angle_dict['r_knee'] <= 60:
-            leg_score += 1
+            r_leg_score += 1
         elif self.angle_dict['r_knee'] > 60:
-            leg_score += 2
+            r_leg_score += 2
         if 30 <= self.angle_dict['l_knee'] <= 60:
-            leg_score += 1
+            l_leg_score += 1
         elif self.angle_dict['l_knee'] > 60:
-            leg_score += 2
-
+            l_leg_score += 2
+        leg_score = max([l_leg_score,r_leg_score])
         # Load
         # if 5 <= self.angle_dict['load'] <= 10:
         #     load_score += 1
@@ -199,18 +199,22 @@ class RebaScoreMIT:
         :return: scoreB, [upper_arm_score, lower_arm_score, wrist_score]
         '''
         keys = [('l_upper_arm','l_lower_arm','l_wrist'),('r_upper_arm','r_lower_arm','r_wrist')]
+       
         for i in range(2):
             upper_arm_score, lower_arm_score, wrist_score = 0, 0, 0
-
+            sagital_shoulder_angle = self.angle_dict[keys[i][0]][0]
+            frontal_shoulder_angle = self.angle_dict[keys[i][0]][1]
             # Upper arm position
-            if -20 <= self.angle_dict[keys[i][0]] <= 20:
+            if -20 <= sagital_shoulder_angle <= 20:
                 upper_arm_score +=1
-            elif self.angle_dict[keys[i][0]] <= 45:
+            elif sagital_shoulder_angle <= 45:
                 upper_arm_score +=2
-            elif 45 <= self.angle_dict[keys[i][0]] <= 90:
+            elif 45 <= sagital_shoulder_angle <= 90:
                 upper_arm_score +=3
-            elif self.angle_dict[keys[i][0]] > 90:
+            elif sagital_shoulder_angle > 90:
                 upper_arm_score +=4
+            
+            upper_arm_score += 1 if frontal_shoulder_angle > 20 else 0
 
             # Upper arm adjust
             # upper_arm_score += 1 if self.angle_dict['shoulder_raised'] else 0
