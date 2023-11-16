@@ -377,6 +377,12 @@ def calc_reba_custom(full_pose_dict,plot=False):
     b_results = []
     c_results = []
     reba_class = []
+    upper_arm_scores=[]
+    lower_arm_scores = []
+    wrist_scores = []
+    neck_scores = []
+    trunk_scores = []
+    leg_scores = []
     for i,frame in enumerate(full_pose_dict['neck']):
         frame_angle_dict = {}
         for key in full_pose_dict:
@@ -387,12 +393,21 @@ def calc_reba_custom(full_pose_dict,plot=False):
         reba_score = RebaScoreMIT(frame_angle_dict)
         score_a, partial_a = reba_score.compute_score_a()
         score_b, partial_b = reba_score.compute_score_b()
+        upper_arm_score, lower_arm_score, wrist_score = partial_b
+        neck_score, trunk_score, leg_score = partial_a
+        upper_arm_scores.append(upper_arm_score)
+        lower_arm_scores.append(lower_arm_score)
+        wrist_scores.append(wrist_score)
+        neck_scores.append(neck_score)
+        trunk_scores.append(trunk_score)
+        leg_scores.append(leg_score)
         score_c, caption = reba_score.compute_score_c(score_a,score_b)
         danger_class = reba_score.score_c_to_5_classes(score_c=score_c)
         a_results.append(score_a)
         b_results.append(score_b)
         c_results.append(score_c)
         reba_class.append(danger_class)
+ 
        
     # print(final_results_array_dict)
     if plot:
@@ -412,7 +427,7 @@ def calc_reba_custom(full_pose_dict,plot=False):
                                 'Very High Risk'
                                 ])
         plt.show()
-    return a_results,b_results,c_results,reba_class
+    return a_results,b_results,c_results,reba_class,upper_arm_scores,lower_arm_scores,wrist_scores,neck_scores,trunk_scores,leg_scores
 
 
 

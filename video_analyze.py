@@ -7,6 +7,7 @@ import sys
 from matplotlib import pyplot as plt
 from ergonomics.reba import RebaScore
 from reba_score_class import RebaScoreMIT
+import pandas as pd
 
 
 test = True
@@ -69,7 +70,8 @@ final_results_l_ankle = {'x':[],'y':[],'z':[],'visibility':[]}
 final_results_r_ankle = {'x':[],'y':[],'z':[],'visibility':[]}
 final_results_r_index = {'x':[],'y':[],'z':[],'visibility':[]}
 final_results_l_index = {'x':[],'y':[],'z':[],'visibility':[]}
-
+final_results_r_pinky = {'x':[],'y':[],'z':[],'visibility':[]}
+final_results_l_pinky = {'x':[],'y':[],'z':[],'visibility':[]}
 final_results_head = {'x':[],'y':[],'z':[],'visibility':[]}
 
 frame_ct = 0
@@ -99,6 +101,8 @@ while cap.isOpened():
     
     try: 
         nose = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.NOSE]
+        nose_frame = results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE]
+        print(nose_frame.x*frame_width,frame_width,frame_height)
  
         l_shoulder = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.LEFT_SHOULDER]
         r_shoulder= results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER]
@@ -120,6 +124,9 @@ while cap.isOpened():
 
         l_index = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.LEFT_INDEX]
         r_index = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_INDEX]
+
+        l_pinky = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.LEFT_PINKY]
+        r_pinky= results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_PINKY]
         
         final_results_l_shoulder['x'].append(l_shoulder.x)
         final_results_l_shoulder['y'].append(l_shoulder.y)
@@ -196,6 +203,16 @@ while cap.isOpened():
         final_results_r_index['z'].append(r_index.z)
         final_results_r_index['visibility'].append(round(r_index.visibility,2))
 
+        final_results_l_pinky['x'].append(l_pinky.x)
+        final_results_l_pinky['y'].append(l_pinky.y)
+        final_results_l_pinky['z'].append(l_pinky.z)
+        final_results_l_pinky['visibility'].append(round(l_pinky.visibility,2))
+
+        final_results_r_pinky['x'].append(r_pinky.x)
+        final_results_r_pinky['y'].append(r_pinky.y)
+        final_results_r_pinky['z'].append(r_pinky.z)
+        final_results_r_pinky['visibility'].append(round(r_pinky.visibility,2))
+
         # final_results_dict = {'nose':final_results_nose,
         #                         'l_shoulder':final_results_l_shoulder,'r_shoulder':final_results_r_shoulder,
         #                         'l_elbow':final_results_l_elbow,'r_elbow':final_results_r_elbow,
@@ -257,6 +274,8 @@ print('CALCULATING ANGLES...',f'total frames = {frame_ct}')
 mid_hip = calc_midpoint_vec(final_results_l_hip,final_results_r_hip)
 mid_shoulder = calc_midpoint_vec(final_results_l_shoulder,final_results_r_shoulder)
 mid_knee = calc_midpoint_vec(final_results_l_knee,final_results_r_knee)
+mid_r_fingers = calc_midpoint_vec(final_results_r_index,final_results_r_pinky)
+mid_l_fingers = calc_midpoint_vec(final_results_l_index,final_results_l_pinky)
 
 hip_angle_ref_point = np.array([0,-5,0])
 
@@ -267,9 +286,11 @@ l_upper_arm_frontal_angles,l_upper_arm_sagital_angles,l_projected_ref_points = g
 r_upper_arm_frontal_angles,r_upper_arm_sagital_angles,r_projected_ref_points = get_sagital_and_frontal_angles(final_results_l_shoulder,final_results_r_hip,final_results_r_shoulder,final_results_r_elbow,hip_ref_points = r_shoulder_hip_ref_points)
 
 # sagital_plane_l_shoulder_angle,frontal_plane_l_should_angle = get_sagital_and_frontal_angles()
-test_frame = 0
+test_frame = 181
 print('l_shoulder_sagital_angle',l_upper_arm_sagital_angles[test_frame])
 print('l_shoulder_frontal_angle',l_upper_arm_frontal_angles[test_frame])
+print('r_shoulder_sagital_angle',r_upper_arm_sagital_angles[test_frame])
+print('r_shoulder_frontal_angle',r_upper_arm_frontal_angles[test_frame])
 
 
 plot_ref_points_w_body(final_results_dict,l_projected_ref_points+r_projected_ref_points,test_frame)
@@ -374,17 +395,17 @@ v1_l_wrist = np.array([np.array(final_results_l_elbow['x'])-np.array(final_resul
 np.array(final_results_l_elbow['y'])-np.array(final_results_l_wrist['y']),
 np.array(final_results_l_elbow['z'])-np.array(final_results_l_wrist['z'])])
 
-v2_l_wrist =  np.array([np.array(final_results_l_index['x'])-np.array(final_results_l_wrist['x']),
-np.array(final_results_l_index['y'])-np.array(final_results_l_wrist['y']),
-np.array(final_results_l_index['z'])-np.array(final_results_l_wrist['z'])])
+v2_l_wrist =  np.array([np.array(mid_l_fingers['x'])-np.array(final_results_l_wrist['x']),
+np.array(mid_l_fingers['y'])-np.array(final_results_l_wrist['y']),
+np.array(mid_l_fingers['z'])-np.array(final_results_l_wrist['z'])])
 
 v1_r_wrist = np.array([np.array(final_results_r_elbow['x'])-np.array(final_results_r_wrist['x']),
 np.array(final_results_r_elbow['y'])-np.array(final_results_r_wrist['y']),
 np.array(final_results_r_elbow['z'])-np.array(final_results_r_wrist['z'])])
 
-v2_r_wrist =  np.array([np.array(final_results_r_index['x'])-np.array(final_results_r_wrist['x']),
-np.array(final_results_r_index['y'])-np.array(final_results_r_wrist['y']),
-np.array(final_results_r_index['z'])-np.array(final_results_r_wrist['z'])])
+v2_r_wrist =  np.array([np.array(mid_r_fingers['x'])-np.array(final_results_r_wrist['x']),
+np.array(mid_r_fingers['y'])-np.array(final_results_r_wrist['y']),
+np.array(mid_r_fingers['z'])-np.array(final_results_r_wrist['z'])])
 
 np.ones_like
 angle_deg_neck = get_joint_angles(v1_neck,v2_neck)
@@ -403,8 +424,8 @@ angle_deg_r_knee = 180-angle_deg_r_knee
 
 angle_deg_l_elbow = get_joint_angles(v1_l_elbow,v2_l_elbow)
 angle_deg_r_elbow = get_joint_angles(v1_r_elbow,v2_r_elbow)
-angle_deg_r_elbow = 180-angle_deg_r_elbow
-angle_deg_l_elbow = 180-angle_deg_l_elbow
+angle_deg_r_elbow = angle_deg_r_elbow
+angle_deg_l_elbow = angle_deg_l_elbow
 
 angle_deg_l_wrist = get_joint_angles(v1_l_wrist,v2_l_wrist)
 angle_deg_r_wrist = get_joint_angles(v1_r_wrist,v2_r_wrist)
@@ -414,8 +435,28 @@ angle_deg_r_wrist = 180-angle_deg_r_wrist-10
 reba_angles = {'l_upper_arm':(l_upper_arm_sagital_angles,l_upper_arm_frontal_angles),'r_upper_arm':(r_upper_arm_sagital_angles,r_upper_arm_frontal_angles),'l_lower_arm':angle_deg_l_elbow,'r_lower_arm':angle_deg_r_elbow,
                     'l_wrist':angle_deg_l_wrist,'r_wrist':angle_deg_r_wrist,
                     'l_knee':angle_deg_l_knee,'r_knee':angle_deg_r_knee,'neck':angle_deg_neck,'trunk_angle':angle_deg_mid_hip}
+reba_angles_dataframe = {'l_upper_arm_sag':l_upper_arm_sagital_angles,'l_upper_arm_frontal':l_upper_arm_frontal_angles,'r_upper_arm_sag':r_upper_arm_sagital_angles,'r_upper_arm_frontal':r_upper_arm_frontal_angles,'l_lower_arm':angle_deg_l_elbow,'r_lower_arm':angle_deg_r_elbow,
+                    'l_wrist':angle_deg_l_wrist,'r_wrist':angle_deg_r_wrist,
+                    'l_knee':angle_deg_l_knee,'r_knee':angle_deg_r_knee,'neck':angle_deg_neck,'trunk_angle':angle_deg_mid_hip}
 
-calc_reba_custom(reba_angles,plot=True)
+
+
+a_results,b_results,c_results,reba_class,upper_arm_scores,lower_arm_scores,wrist_scores,neck_scores,trunk_scores,leg_scores =calc_reba_custom(reba_angles,plot=False)
+reba_angles_dataframe['a_score'] = a_results
+reba_angles_dataframe['b_score'] = b_results
+reba_angles_dataframe['c_score'] = c_results
+
+reba_angles_dataframe['upper_arm_score'] = upper_arm_scores
+reba_angles_dataframe['lower_arm_score'] = lower_arm_scores
+reba_angles_dataframe['wrist_score'] = wrist_scores
+reba_angles_dataframe['neck_score'] = neck_scores
+reba_angles_dataframe['trunk_score'] = trunk_scores
+reba_angles_dataframe['leg_score'] = leg_scores
+
+
+dataframe = pd.DataFrame(data=reba_angles_dataframe)
+
+dataframe.to_csv('reba_test_videos/data/reba_data.csv')
 
 #These calcualte the distance between nodes
 # nose_ankle_dist = calc_distance_between_nodes(final_results_nose,final_results_r_ankle)
