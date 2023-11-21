@@ -159,6 +159,8 @@ class RebaScoreMIT:
         # Legs position
         # leg_score += 2 if self.angle_dict['legs_walking'] else 1
         # Legs adjust
+        r_leg_score +=1 #because standing
+        l_leg_score +=1 #because standing
         if 30 <= self.angle_dict['r_knee'] <= 60:
             r_leg_score += 1
         elif self.angle_dict['r_knee'] > 60:
@@ -185,6 +187,7 @@ class RebaScoreMIT:
         assert neck_score > 0 and trunk_score > 0 and leg_score > 0
 
         score_a = self.table_a[neck_score-1][trunk_score-1][leg_score-1]
+        # print(score_a,neck_score,trunk_score,leg_score)
         return score_a, np.array([neck_score, trunk_score, leg_score])
 
     def compute_score_b(self):
