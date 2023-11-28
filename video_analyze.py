@@ -10,12 +10,13 @@ import pandas as pd
 from reba_video_analyzer import *
 
 
-test = True
+test = False
 front_view = True
 create_csv_from_data = False
 show_plots = True
+video_file_path = 'scan_video1.avi'
 
-peaks_dataframe = reba_video_analyzer(video_file_path=None,
+peaks_dataframe,total_dataframe = reba_video_analyzer(video_file_path=video_file_path,
                     test=test,
                     frontview=True,
                     show_plots=show_plots,
