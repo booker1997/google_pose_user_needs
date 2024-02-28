@@ -12,7 +12,7 @@ from reba_video_analyzer import *
 
 test = False
 front_view = True
-create_csv_from_data = False
+create_csv_from_data = True
 show_plots = True
 video_file_path = 'scan_video1.avi'
 

@@ -72,17 +72,12 @@ def reba_video_analyzer(video_file_path=None,test=False,frontview=True,show_plot
         ret, image = cap.read()
         if not ret:
             break
-        # im = cv2.imread(image)
-        # h, w, c = im.shape
+       
         image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
-        # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image.flags.writeable = False
         results = pose.process(image)
         if frame_ct == 0 or frame_ct == 45: # this plots the pose estimation in the 3d coordinate system
             results_storage.append(results)
-            # print('Nose world landmark:'),
-            # print(results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.NOSE])
-            # mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS)
         frame_ct += 1
         if frame_ct%camera_frames_per_second == 0:
             second_processed_count += 1
@@ -114,7 +109,7 @@ def reba_video_analyzer(video_file_path=None,test=False,frontview=True,show_plot
             l_ankle = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ANKLE]
             l_ankle_frame = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ANKLE]
             r_ankle = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ANKLE]
-            r_ankle_frame = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ANKLE]
+            r_ankle_frame = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ANKLE]
             
             l_elbow = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ELBOW]
             l_elbow_frame = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ELBOW]
@@ -151,8 +146,6 @@ def reba_video_analyzer(video_file_path=None,test=False,frontview=True,show_plot
                 final_results_list[i_joint]['z'].append(joint.z)
                 final_results_list[i_joint]['x_frame'].append(round((1-joint_frame_names[i_joint].x)*frame_width)) #minus 1 becasuse image is flipped
                 final_results_list[i_joint]['y_frame'].append(round(joint_frame_names[i_joint].y*frame_height))
-                # if joint_frame_names[i_joint].x<0 or joint_frame_names[i_joint].y<0:
-                #     print(joint_names_str[i_joint],'x',joint_frame_names[i_joint].x,'y',joint_frame_names[i_joint].y)
                 final_results_list[i_joint]['z_frame'].append(joint_frame_names[i_joint].z)
                 final_results_list[i_joint]['visibility'].append(round(joint.visibility,2))
            
@@ -180,9 +173,7 @@ def reba_video_analyzer(video_file_path=None,test=False,frontview=True,show_plot
                                 'l_hip':final_results_l_hip,'l_knee':final_results_l_knee,'l_ankle':final_results_l_ankle,
                                 'r_hip':final_results_r_hip,'r_knee':final_results_r_knee,'r_ankle':final_results_r_ankle}
                                 
-    # ikea_threed_dataframe = pd.DataFrame(data=final_results_dict)
-
-    # ikea_threed_dataframe.to_csv('3D_data_ikea.csv')
+    
 
     print('CALCULATING ANGLES...',f'total frames = {frame_ct}')
 
@@ -356,7 +347,7 @@ def reba_video_analyzer(video_file_path=None,test=False,frontview=True,show_plot
     #Post process and create peaks dataframe
 
     max_reba_c = max(c_results)
-    find_peaks_above = 3
+    find_peaks_above = 8
     peak_i = find_peaks(c_results,find_peaks_above)[0]
     peak_mags = np.array(c_results)[peak_i]
  
@@ -432,6 +423,10 @@ def reba_video_analyzer(video_file_path=None,test=False,frontview=True,show_plot
 
         dataframe_output = pd.DataFrame(data=peaks_dataframe)
         dataframe_output.to_csv('reba_test_videos/data/peaks_output_by_frame.csv')
+
+        ikea_threed_dataframe = pd.DataFrame(data=final_results_dict)
+        ikea_threed_dataframe.to_csv('3D_data_ikea.csv')
+
         return peaks_dataframe,total_dataframe
     else:
         return peaks_dataframe,reba_angles_dataframe
