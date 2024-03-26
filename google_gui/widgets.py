@@ -115,7 +115,6 @@ class VideoWidget():
 
         self.skip_plus_5sec = tk.Button(self.root, text="Skip +5 sec", command=lambda: self.skip(5))
         self.skip_plus_5sec.pack(side="left")
-        self.vid_player.play()
     def find_problem_joint(self,peak_frame):
         high_score = 0
         high_body_part = None
@@ -205,10 +204,7 @@ class VideoWidget():
         if file_path:
             self.vid_player.load(file_path)
 
-            self.progress_slider.config(to=0, from_=0)
-            # self.play_pause_btn["text"] = "Play"
-            # self.progress_value.set(0)
-            # print(self.vid_player.video_info()['framerate'])
+            # self.progress_slider.config(to=0, from_=0)
     
 
 
@@ -252,7 +248,8 @@ if __name__ == "__main__":
 
     new_video = False
 
-    video_file_path = 'booker.mp4'
+    # video_file_path = 'booker.mp4'
+    video_file_path = 'scan_video1.avi'
     if new_video:
         gui_dataframe_output,peaks_dataframe,reba_data = reba_video_analyzer(video_file_path=video_file_path,
                         test=test,
