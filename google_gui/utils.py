@@ -1,14 +1,38 @@
-import random
-import cv2
-import mediapipe as mp
+import csv
+# import mediapipe as mp
 import numpy as np
-import sys
+# import sys
 from matplotlib import pyplot as plt
 from ergonomics.reba import RebaScore
 from reba_score_class import RebaScoreMIT
 import plotly.express as px
 import plotly.graph_objects as go
+import ast
 
+
+
+def remake_dicts_from_csv(filename):
+    """Loads a CSV file as a dictionary by columns.
+
+  Args:
+    filename: The path to the CSV file.
+
+  Returns:
+    A dictionary where the keys are the column names and the values are lists
+    of the values in that column.
+  """
+
+    with open(filename, "r") as f:
+        reader = csv.reader(f)
+        headers = next(reader)
+        data = {}
+        for row in reader:
+            for i, header in enumerate(headers):
+                if header == 'peak_risk_level':
+                    data.setdefault(header, []).append(row[i])
+                else:
+                    data.setdefault(header, []).append(ast.literal_eval(row[i]))
+        return data
 
 def get_sagital_and_frontal_angles(plane_start_joint,on_plane_angle_start_joint,on_plane_angle_mid_joint,angle_end_joint,hip_ref_points = []):
     if len(hip_ref_points)>0:

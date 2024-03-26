@@ -350,7 +350,7 @@ def reba_video_analyzer(video_file_path=None,test=False,frontview=True,show_plot
 
     max_reba_c = max(c_results)
     find_peaks_above = 6
-    dist_between_peeks = 20
+    dist_between_peeks = 250
     all_peaks_i,peak_props = find_peaks(c_results,height=find_peaks_above,distance=dist_between_peeks)
     print(all_peaks_i,peak_props)
     peak_mags = np.array(c_results)[all_peaks_i]
@@ -485,7 +485,7 @@ def reba_video_analyzer(video_file_path=None,test=False,frontview=True,show_plot
         gui_dataframe_output.to_csv('gui_peaks_dataframe.csv')
 
         dataframe_output = pd.DataFrame(data=peaks_dataframe)
-        dataframe_output.to_csv('peaks_dataframe_for_objects.csv')
+        dataframe_output.to_csv('peaks_dataframe.csv')
 
         ikea_threed_dataframe = pd.DataFrame(data=final_results_dict)
         ikea_threed_dataframe.to_csv('3D_data_ikea.csv')

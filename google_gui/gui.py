@@ -4,13 +4,26 @@ from tkinter import ttk
 import customtkinter
 import time
 import threading
-# from widgets import *
+from widgets import *
 
 # customtkinter.set_appearance_mode("dark")
 
 class ExperimentGUI:
 
-    def __init__(self, root):
+    def __init__(self, root,video_file_path):
+
+        test = False
+        front_view = True
+        create_csv_from_data = True
+        show_plots = False
+        gui_dataframe_output,peaks_dataframe,total_dataframe = reba_video_analyzer(video_file_path=video_file_path,
+                            test=test,
+                            frontview=True,
+                            show_plots=show_plots,
+                            camera_frames_per_second = 30,
+                            create_csv_from_data = create_csv_from_data)
+        self.video_widg = VideoWidget(gui_dataframe_output,peaks_dataframe,total_dataframe,video_file_path)
+
         self.root = root
         self.root.title("Experiment GUI")
 
@@ -98,8 +111,9 @@ class ExperimentGUI:
         self.start_countdown(2*self.timer_length, self.show_end_screen)  # 15 minutes countdown
 
         # BOOKER, DISPLAY VIDEO HERE!!!!!!!!!!!!!!!!!!!!
-        video = ttk.Label(self.screen_3_frame, text="VIDEO GOES HERE", font=("Helvetica", 120), background="red", borderwidth=5, relief="raised", padding="0.4i",)
-        video.grid(row=1, column=0, columnspan=2, rowspan=4, pady=10)
+        video = self.video_widg.run()
+        # video = ttk.Label(self.screen_3_frame, text="VIDEO GOES HERE", font=("Helvetica", 120), background="red", borderwidth=5, relief="raised", padding="0.4i",)
+        # video.grid(row=1, column=0, columnspan=2, rowspan=4, pady=10)
 
         textOption = {
             "Event 1": "Left Knee in dangerous position",
@@ -209,6 +223,7 @@ class ExperimentGUI:
 
 if __name__ == "__main__":
     root = customtkinter.CTk()
-    app = ExperimentGUI(root)
+    video_file_path = 'booker.mp4'
+    app = ExperimentGUI(root,video_file_path)
     entry_list=[]
     root.mainloop()

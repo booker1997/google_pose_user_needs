@@ -9,9 +9,11 @@ from reba_video_analyzer import *
 import math
 import time
 import threading
+from utils import remake_dicts_from_csv
+
 # print(peaks_dataframe)
 class VideoWidget():
-    def __init__(self,gui_dataframe_output,peaks_dataframe,total_dataframe,video_file_path=None):
+    def __init__(self,gui_dataframe_output,peaks_dataframe,reba_data,video_file_path=None):
         # self.root = tk.Tk()
         #style
         self.root = customtkinter.CTk()
@@ -21,7 +23,7 @@ class VideoWidget():
         self.root.geometry(f"{screen_width}x{screen_height}")
         self.root.config(bg=bg_color)
         self.root.state("zoomed")
-        self.root.resizable(False, False)
+        self.root.resizable(False, True)
         self.style = ttk.Style()
         self.style.configure("Custom.TFrame", background=bg_color)
         self.style.configure("Custom.TButton", background=bg_color, font=("Helvetica", 30))
@@ -35,19 +37,20 @@ class VideoWidget():
 
         self.gui_dataframe_output = gui_dataframe_output
         self.peaks_dataframe = peaks_dataframe
-        self.total_dataframe=total_dataframe
+        self.reba_data=reba_data
         print(self.gui_dataframe_output)
         # print(self.peaks_dataframe['frame_of_max_peak'])
         # print(self.peaks_dataframe['frame_c_score'])
         self.peak_frames = []
         self.peak_reba_cs = []
-        self.total_frames = len(total_dataframe['frame'])
+        self.total_frames = len(reba_data['frame'])
         event_data = {}
         for i,peak_frame in enumerate(gui_dataframe_output['peaks_i']):
             button_data = {}
             peak_val = gui_dataframe_output['peak_val'][i]
             problem_body_part = self.find_problem_joint(peak_frame)
             button_data['peak_val'] = peak_val
+            button_data['peak_frame'] = peak_frame
             button_data['perc_in_vid'] = (peak_frame+1)/self.total_frames
             button_data['bad_joint'] = None
             button_data['text'] = f"Reba score: {peak_val}. {problem_body_part[:-6]} in dangerous position"
@@ -62,10 +65,6 @@ class VideoWidget():
 
         
         # self.configure_rows_columns()
-        
-        
-        self.perc_btn = tk.Button(self.root, text="go to perc", command=lambda: self.seek_from_perc(self.gui_dataframe_output['peaks_i'][1]/self.total_frames))
-        self.perc_btn.pack()
 
         self.root.title("Need Finder Tool Interface")
         # self.root.geometry("800x700+290+10")
@@ -120,11 +119,11 @@ class VideoWidget():
     def find_problem_joint(self,peak_frame):
         high_score = 0
         high_body_part = None
-        for key in self.total_dataframe:
+        for key in self.reba_data:
             if key[-5:] == 'score' and key[0] not in ['a','b','c']:
-                print(key,self.total_dataframe[key][peak_frame],high_score)
-                if self.total_dataframe[key][peak_frame] > high_score:
-                    high_score = self.total_dataframe[key][peak_frame]
+                print(key,self.reba_data[key][peak_frame],high_score)
+                if self.reba_data[key][peak_frame] > high_score:
+                    high_score = self.reba_data[key][peak_frame]
                     high_body_part = key
 
         return high_body_part
@@ -136,8 +135,8 @@ class VideoWidget():
         if self.display != None:
             self.display.destroy()
         perc = button_data[button_number]['perc_in_vid']
-        print(perc)
-        self.seek_from_perc(perc)
+        peak_frame = button_data[button_number]['peak_frame']
+        self.seek_from_perc(peak_frame,perc)
         self.display = ttk.Label(frame, text=button_data[button_number]['text'], style="Custom.TLabel")
         self.display.pack()
         # self.display.grid(row=5, column=1)
@@ -153,21 +152,18 @@ class VideoWidget():
             # new_button.grid(row=(button_counter + 5), column=0, pady=2)
             button_counter += 1
         return None
-    def seek_from_perc(self,perc):
+    def seek_from_perc(self,frame,perc):
         # percentage = (desired_frame+1)/self.total_frames
         # rounded_frame = int(self.total_frames*percentage)
-        seconds = perc*self.duration
+        seconds = frame/self.frame_rate
         # rounded_frame = int(self.total_frames*percentage)
         val =int(math.floor(seconds))
-        print(self.duration,seconds,val)
+        print(seconds,val)
         self.vid_player.seek(val)
         self.progress_value.set(val)
         diff = seconds - val
-        print('before',self.vid_player.current_duration())
-        self.vid_player.play()
-        time.sleep(diff)
-        print('after',self.vid_player.current_duration())
-        self.play_pause()
+       
+        
         # self.play_pause()
     def start_countdown(self, seconds):
         self.timer_seconds = seconds
@@ -195,6 +191,7 @@ class VideoWidget():
     def update_scale(self,event):
         """ updates the scale value """
         print(self.vid_player.video_info()['framerate'])
+        self.frame_rate = int(self.vid_player.video_info()['framerate'])
         self.progress_value.set(self.vid_player.current_duration())
 
 
@@ -252,15 +249,18 @@ if __name__ == "__main__":
     front_view = True
     create_csv_from_data = True
     show_plots = False
-    video_file_path = 'booker.mp4'
-    gui_dataframe_output,peaks_dataframe,total_dataframe = reba_video_analyzer(video_file_path=video_file_path,
-                        test=test,
-                        frontview=True,
-                        show_plots=show_plots,
-                        camera_frames_per_second = 30,
-                        create_csv_from_data = create_csv_from_data)
-    annotated_video_file_path = 'booker_annotated.avi'
-    widg = VideoWidget(gui_dataframe_output,peaks_dataframe,total_dataframe,video_file_path)
+    video_file_path = 'scan_video1.avi'
+    gui_dataframe_output = remake_dicts_from_csv('gui_peaks_dataframe.csv')
+    peaks_dataframe = remake_dicts_from_csv('peaks_dataframe.csv')
+    reba_data = remake_dicts_from_csv('reba_data.csv')
+    # gui_dataframe_output,peaks_dataframe,reba_data = reba_video_analyzer(video_file_path=video_file_path,
+    #                     test=test,
+    #                     frontview=True,
+    #                     show_plots=show_plots,
+    #                     camera_frames_per_second = 30,
+    #                     create_csv_from_data = create_csv_from_data)
+    # annotated_video_file_path = 'scan_video1_annotated.avi'
+    widg = VideoWidget(gui_dataframe_output,peaks_dataframe,reba_data,video_file_path)
     widg.run()
     # root.mainloop()
  
