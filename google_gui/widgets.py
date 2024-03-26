@@ -85,7 +85,7 @@ class VideoWidget():
         self.play_pause_btn = tk.Button(self.root, text="Play", command=self.play_pause)
         self.play_pause_btn.pack()
 
-        self.add_button(event_data, self.root)
+        self.add_buttons(event_data, self.root)
 
         self.skip_plus_5sec = tk.Button(self.root, text="Skip -5 sec", command=lambda: self.skip(-5))
         self.skip_plus_5sec.pack(side="left")
@@ -140,7 +140,7 @@ class VideoWidget():
         self.display = ttk.Label(frame, text=button_data[button_number]['text'], style="Custom.TLabel")
         self.display.pack()
         # self.display.grid(row=5, column=1)
-    def add_button(self, data, frame):
+    def add_buttons(self, data, frame):
         button = tk.IntVar()
         button_counter = 1
         for entry in data:
@@ -206,9 +206,9 @@ class VideoWidget():
             self.vid_player.load(file_path)
 
             self.progress_slider.config(to=0, from_=0)
-            self.play_pause_btn["text"] = "Play"
-            self.progress_value.set(0)
-            print(self.vid_player.video_info()['framerate'])
+            # self.play_pause_btn["text"] = "Play"
+            # self.progress_value.set(0)
+            # print(self.vid_player.video_info()['framerate'])
     
 
 
@@ -249,17 +249,23 @@ if __name__ == "__main__":
     front_view = True
     create_csv_from_data = True
     show_plots = False
-    video_file_path = 'scan_video1.avi'
-    gui_dataframe_output = remake_dicts_from_csv('gui_peaks_dataframe.csv')
-    peaks_dataframe = remake_dicts_from_csv('peaks_dataframe.csv')
-    reba_data = remake_dicts_from_csv('reba_data.csv')
-    # gui_dataframe_output,peaks_dataframe,reba_data = reba_video_analyzer(video_file_path=video_file_path,
-    #                     test=test,
-    #                     frontview=True,
-    #                     show_plots=show_plots,
-    #                     camera_frames_per_second = 30,
-    #                     create_csv_from_data = create_csv_from_data)
-    # annotated_video_file_path = 'scan_video1_annotated.avi'
+
+    new_video = False
+
+    video_file_path = 'booker.mp4'
+    if new_video:
+        gui_dataframe_output,peaks_dataframe,reba_data = reba_video_analyzer(video_file_path=video_file_path,
+                        test=test,
+                        frontview=True,
+                        show_plots=show_plots,
+                        camera_frames_per_second = 30,
+                        create_csv_from_data = create_csv_from_data)
+    else: 
+        gui_dataframe_output = remake_dicts_from_csv('gui_peaks_dataframe.csv')
+        peaks_dataframe = remake_dicts_from_csv('peaks_dataframe.csv')
+        reba_data = remake_dicts_from_csv('reba_data.csv')
+
+    annotated_video_file_path = 'scan_video1_annotated.avi'
     widg = VideoWidget(gui_dataframe_output,peaks_dataframe,reba_data,video_file_path)
     widg.run()
     # root.mainloop()
