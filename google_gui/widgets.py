@@ -76,8 +76,8 @@ class VideoWidget():
 
         self.start_countdown(self.timer_length) 
 
-        self.load_btn = tk.Button(self.root, text="Load", command=self.load_video)
-        self.load_btn.pack()
+        # self.load_btn = tk.Button(self.root, text="Load", command=self.load_video)
+        # self.load_btn.pack()
 
         self.vid_player = TkinterVideo(scaled=True, master=self.root)
         self.vid_player.pack(expand=True, fill="both")
