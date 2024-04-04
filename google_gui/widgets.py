@@ -13,10 +13,14 @@ from utils import remake_dicts_from_csv
 
 # print(peaks_dataframe)
 class VideoWidget():
-    def __init__(self,gui_dataframe_output,peaks_dataframe,reba_data,video_file_path=None):
+    def __init__(self,gui_dataframe_output,peaks_dataframe,reba_data,timer_callback=None,video_file_path=None):
         # self.root = tk.Tk()
         #style
         self.root = customtkinter.CTk()
+        self.timer_callback = timer_callback
+        self.button_label = 'Problem '
+        self.object_data = remake_dicts_from_csv('object_data.csv')
+        self.object_labels = ['table top','table leg']
         bg_color = "light grey"
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
@@ -24,7 +28,7 @@ class VideoWidget():
         self.root.geometry(f"{screen_width}x{screen_height}")
         self.root.config(bg=bg_color)
         self.root.state("zoomed")
-        self.root.resizable(False, False)
+        self.root.resizable(False, True)
         self.style = ttk.Style()
         self.style.configure("Custom.TFrame", background=bg_color)
         self.style.configure("Custom.TButton", background=bg_color, foreground="black", font=("Helvetica", font_size))
@@ -39,7 +43,6 @@ class VideoWidget():
         self.gui_dataframe_output = gui_dataframe_output
         self.peaks_dataframe = peaks_dataframe
         self.reba_data=reba_data
-        print(self.gui_dataframe_output)
         # print(self.peaks_dataframe['frame_of_max_peak'])
         # print(self.peaks_dataframe['frame_c_score'])
         self.peak_frames = []
@@ -52,10 +55,23 @@ class VideoWidget():
             problem_body_part = self.find_problem_joint(peak_frame)
             button_data['peak_val'] = peak_val
             button_data['peak_frame'] = peak_frame
+            objects_interacting = []
+            if i< len(self.object_data['start_frame']):
+                button_data['start_frame'] = self.object_data['start_frame'][i]
+                button_data['end_frame'] = self.object_data['end_frame'][i]
+                if self.object_data['inter_w_hand'][i] != None:
+                    for item in self.object_data['inter_w_hand'][i]:
+                        objects_interacting.append(item)
+                if self.object_data['inter_w_foot'][i] != None:
+                    for item in self.object_data['inter_w_foot'][i]:
+                        if item not in objects_interacting:
+                            objects_interacting.append(item)
+                
+
             button_data['perc_in_vid'] = (peak_frame+1)/self.total_frames
             button_data['bad_joint'] = None
-            button_data['text'] = f"Reba score: {peak_val}. {problem_body_part[:-6]} in dangerous position"
-            event_data[f'Event {i+1}'] = button_data
+            button_data['text'] = f"Reba score: {peak_val}. {problem_body_part[:-6]} in dangerous position. \nLook at interactions with the following objects: {objects_interacting} "
+            event_data[self.button_label + f'{i+1}'] = button_data
 
 
         # textOption = {
@@ -82,7 +98,7 @@ class VideoWidget():
         self.control_frame = ttk.Frame(self.root, style="Custom.TFrame", height=frame_height, width=frame_width)
         self.button_frame = ttk.Frame(self.root, style="Custom.TFrame", height=frame_height, width=frame_width)
         self.output_frame = ttk.Frame(self.root, style="Custom.TFrame", height=frame_height, width=frame_width)
-
+        self.all_frames = [self.timer_frame,self.video_frame,self.play_frame,self.control_frame,self.button_frame,self.output_frame]
         # Frame borders to help layout
         # self.timer_frame.config(borderwidth=20, relief="ridge")
         # self.video_frame.config(borderwidth=20, relief="ridge")
@@ -99,12 +115,12 @@ class VideoWidget():
         self.output_frame.pack()
 
         self.countdown_var = tk.StringVar()
-        self.countdown_var_2 = tk.StringVar()
-        countdown_var_label_2 = ttk.Label(self.timer_frame, textvariable=self.countdown_var_2, style="Custom.TLabel")
-        countdown_var_label_2.pack()
+        # self.countdown_var_2 = tk.StringVar()
+        countdown_var_label = ttk.Label(self.timer_frame, textvariable=self.countdown_var, style="Custom.TLabel")
+        countdown_var_label.pack()
         # countdown_var_label_2.grid(row=0, column=0, columnspan=3, pady=10)
 
-        self.start_countdown(self.timer_length)
+        # self.start_countdown(self.timer_length,self.hide_all_screens)
 
         # self.load_btn = tk.Button(self.root, text="Load", command=self.load_video)
         # self.load_btn.pack()
@@ -115,10 +131,10 @@ class VideoWidget():
         self.play_pause_btn = tk.Button(self.play_frame, text="Play", command=self.play_pause, font=("Helvetica", 50))
         self.play_pause_btn.pack()
 
-        self.skip_plus_5sec = tk.Button(self.control_frame, text="Skip -5 sec", command=lambda: self.skip(-5), font=("Helvetica", 50))
-        self.skip_plus_5sec.pack(side="left", expand=True, fill="both")
+        # self.skip_plus_5sec = tk.Button(self.control_frame, text="Skip -5 sec", command=lambda: self.skip(-5), font=("Helvetica", 30))
+        # self.skip_plus_5sec.pack(side="left", expand=True, fill="both")
 
-        self.start_time = tk.Label(self.control_frame, text=str(timedelta(seconds=0)), font=("Helvetica", 50))
+        self.start_time = tk.Label(self.control_frame, text=str(timedelta(seconds=0)), font=("Helvetica", 30))
         self.start_time.pack(side="left", expand=True, fill="both")
 
         self.progress_value = tk.DoubleVar(self.root)
@@ -127,7 +143,7 @@ class VideoWidget():
         # progress_slider.bind("<ButtonRelease-1>", seek)
         self.progress_slider.pack(side="left", fill="x", expand=True)
 
-        self.end_time = tk.Label(self.control_frame, text=str(timedelta(seconds=0)), font=("Helvetica", 50))
+        self.end_time = tk.Label(self.control_frame, text=str(timedelta(seconds=0)), font=("Helvetica", 30))
         self.end_time.pack(side="left", expand=True, fill="both")
         if video_file_path!=None:
             self.video_file_path = video_file_path
@@ -139,8 +155,8 @@ class VideoWidget():
         self.vid_player.bind("<<SecondChanged>>", self.update_scale)
         self.vid_player.bind("<<Ended>>", self.video_ended )
 
-        self.skip_plus_5sec = tk.Button(self.control_frame, text="Skip +5 sec", command=lambda: self.skip(5), font=("Helvetica", 50))
-        self.skip_plus_5sec.pack(side="left", expand=True, fill="both")
+        # self.skip_plus_5sec = tk.Button(self.control_frame, text="Skip +5 sec", command=lambda: self.skip(5), font=("Helvetica", 30))
+        # self.skip_plus_5sec.pack(side="left", expand=True, fill="both")
 
         self.add_buttons(event_data, self.button_frame)
 
@@ -150,7 +166,7 @@ class VideoWidget():
         high_body_part = None
         for key in self.reba_data:
             if key[-5:] == 'score' and key[0] not in ['a','b','c']:
-                print(key,self.reba_data[key][peak_frame],high_score)
+                # print(key,self.reba_data[key][peak_frame],high_score)
                 if self.reba_data[key][peak_frame] > high_score:
                     high_score = self.reba_data[key][peak_frame]
                     high_body_part = key
@@ -166,8 +182,9 @@ class VideoWidget():
             self.display.destroy()
         perc = button_data[button_number]['perc_in_vid']
         peak_frame = button_data[button_number]['peak_frame']
-        self.seek_from_perc(peak_frame,perc)
-        self.display = ttk.Label(self.output_frame, text=button_data[button_number]['text'], style="Custom.TLabel")
+        start_frame = button_data[button_number]['start_frame']
+        self.seek_from_perc(start_frame)
+        self.display = ttk.Label(self.output_frame, text=button_data[button_number]['text'], style="Custom.TLabel",font=("Helvetica", 30))
         self.display.pack()
         # self.display.grid(row=5, column=1)
 
@@ -176,22 +193,21 @@ class VideoWidget():
         button_counter = 1
         # print(data)
         for entry in data:
-            button_text = str(f"Event {button_counter}")
+            button_text = str(self.button_label + f"{button_counter}")
             # TO VERIFY INPUT
             # print(f"This is button {button_counter} with text {button_text} which should correspond to {data[button_text]}")
-            new_button = tk.Radiobutton(frame, bg="light blue", text=button_text, indicatoron=False, value=button_counter, variable=button, command=(lambda button_label=button_text: self.text_display_and_seek(data, button_label)), font=("Helvetica", 60))
+            new_button = tk.Radiobutton(frame, bg="red", text=button_text, indicatoron=False, value=button_counter, variable=button, command=(lambda button_label=button_text: self.text_display_and_seek(data, button_label)), font=("Helvetica", 30))
             new_button.pack(side="left", anchor="center")
             # new_button.grid(row=(button_counter + 5), column=0, pady=2)
             button_counter += 1
         return None
 
-    def seek_from_perc(self,frame,perc):
+    def seek_from_perc(self,frame):
         # percentage = (desired_frame+1)/self.total_frames
         # rounded_frame = int(self.total_frames*percentage)
         seconds = frame/self.frame_rate
         # rounded_frame = int(self.total_frames*percentage)
         val =int(math.floor(seconds))
-        print(seconds,val)
         self.vid_player.seek(val)
         self.progress_value.set(val)
         diff = seconds - val
@@ -199,22 +215,24 @@ class VideoWidget():
 
         # self.play_pause()
 
-    def start_countdown(self, seconds):
+    def start_countdown(self, seconds, callback):
         self.timer_seconds = seconds
         self.timer_running = True
 
         def countdown():
-            while self.timer_seconds > 0 and self.timer_running:
-                self.countdown_var.set("Time Remaining: " + self.format_time(self.timer_seconds))
-                self.countdown_var_2.set("Time Remaining: " + self.format_time(self.timer_seconds))
-                time.sleep(1)
+            if self.timer_seconds > 0 and self.timer_running:
+                self.root.after(1000, countdown)  # Schedule the next countdown in 1 second
                 self.timer_seconds -= 1
+            elif self.timer_running:
+                callback()
 
+        def update_gui():
             if self.timer_running:
-                self.root.withdraw()
+                self.countdown_var.set("Time Remaining: " + self.format_time(self.timer_seconds))
+                self.root.after(1000, update_gui)  # Schedule the next GUI update in 1 second
 
-
-        threading.Thread(target=countdown).start()
+        threading.Thread(target=countdown).start()  # Start the countdown in a separate thread
+        update_gui()
 
     def update_duration(self,event):
         """ updates the duration after finding the duration """
@@ -225,7 +243,7 @@ class VideoWidget():
 
     def update_scale(self,event):
         """ updates the scale value """
-        print(self.vid_player.video_info()['framerate'])
+        # print(self.vid_player.video_info()['framerate'])
         self.frame_rate = int(self.vid_player.video_info()['framerate'])
         self.progress_value.set(self.vid_player.current_duration())
 
@@ -272,8 +290,16 @@ class VideoWidget():
         self.progress_slider.set(self.progress_slider["to"])
         self.play_pause_btn["text"] = "Play"
         self.progress_slider.set(0)
+    def hide_all_screens(self):
+        for frame in self.all_frames:
+            frame.destroy()
+        self.timer_callback()
     def run(self):
+        # Start the countdown in a separate thread
+        threading.Thread(target=self.start_countdown, args=(self.timer_length, self.hide_all_screens)).start()
+        # Run the Tkinter main loop in the main thread
         self.root.mainloop()
+        # self.root.mainloop()
 
 
 if __name__ == "__main__":
@@ -285,7 +311,7 @@ if __name__ == "__main__":
     new_video = False
 
     # video_file_path = 'booker.mp4'
-    video_file_path = 'scan_video1.avi'
+    video_file_path = 'scan_video1_with_masks.avi'
     if new_video:
         gui_dataframe_output,peaks_dataframe,reba_data = reba_video_analyzer(video_file_path=video_file_path,
                         test=test,
@@ -297,8 +323,7 @@ if __name__ == "__main__":
         gui_dataframe_output = remake_dicts_from_csv('gui_peaks_dataframe.csv')
         peaks_dataframe = remake_dicts_from_csv('peaks_dataframe.csv')
         reba_data = remake_dicts_from_csv('reba_data.csv')
-
-    annotated_video_file_path = 'scan_video1_annotated.avi'
-    widg = VideoWidget(gui_dataframe_output,peaks_dataframe,reba_data,video_file_path)
+    
+    widg = VideoWidget(gui_dataframe_output,peaks_dataframe,reba_data,video_file_path=video_file_path)
     widg.run()
     # root.mainloop()
