@@ -177,7 +177,7 @@ class VideoWidget():
                 # print(key,self.reba_data[key][peak_frame],high_score)
                 score = self.reba_data[key][peak_frame]
                 perc = score/self.max_reba_scores_dict[key]
-                if perc > .5:
+                if perc > .67:
                     high_perc = perc
                     high_body_parts.append(key)
                 print('HERE',key,score,perc,high_perc,high_body_parts)
@@ -343,8 +343,11 @@ if __name__ == "__main__":
         gui_dataframe_output = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_gui_peaks_dataframe.csv')
         peaks_dataframe = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_peaks_dataframe.csv')
         reba_data = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_reba_data.csv')
-        # object_data = remake_dicts_from_csv(video_file_path[7:-4]+'_object_data.csv')
+        try:
+            object_data = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_object_data.csv')
+        except:
+            object_data = None
     
-    widg = VideoWidget(video_file_path,gui_dataframe_output,peaks_dataframe,reba_data,object_data=None)
+    widg = VideoWidget(video_file_path,gui_dataframe_output,peaks_dataframe,reba_data,object_data=object_data)
     widg.run()
     # root.mainloop()
