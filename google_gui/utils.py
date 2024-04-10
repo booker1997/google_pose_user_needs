@@ -30,6 +30,8 @@ def remake_dicts_from_csv(filename):
             for i, header in enumerate(headers):
                 if header == 'peak_risk_level':
                     data.setdefault(header, []).append(row[i])
+                elif len(row[i]) == 0:
+                    data.setdefault(header, []).append(None)
                 else:
                     data.setdefault(header, []).append(ast.literal_eval(row[i]))
         return data
