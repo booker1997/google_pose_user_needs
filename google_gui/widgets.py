@@ -13,13 +13,19 @@ from utils import remake_dicts_from_csv
 
 # print(peaks_dataframe)
 class VideoWidget():
-    def __init__(self,gui_dataframe_output,peaks_dataframe,reba_data,timer_callback=None,video_file_path=None):
+    def __init__(self,video_file_path, gui_dataframe_output,peaks_dataframe,reba_data,object_data=None,timer_callback=None):
         # self.root = tk.Tk()
         #style
         self.root = customtkinter.CTk()
         self.timer_callback = timer_callback
         self.button_label = 'Problem '
-        self.object_data = remake_dicts_from_csv('object_data.csv')
+        self.object_data_bool = True
+        self.max_reba_scores_dict = {'upper_arm_score':	6,'lower_arm_score': 2,	'wrist_score':	3,'neck_score':	3,'trunk_score':5 ,'leg_score': 4}
+
+        if object_data!= None:
+            self.object_data = object_data
+        else:
+            self.object_data_bool=False
         self.object_labels = ['table top','table leg']
         bg_color = "light grey"
         screen_width = self.root.winfo_screenwidth()
@@ -52,25 +58,27 @@ class VideoWidget():
         for i,peak_frame in enumerate(gui_dataframe_output['peaks_i']):
             button_data = {}
             peak_val = gui_dataframe_output['peak_val'][i]
-            problem_body_part = self.find_problem_joint(peak_frame)
+            problem_body_parts = self.find_problem_joint(peak_frame)
             button_data['peak_val'] = peak_val
             button_data['peak_frame'] = peak_frame
             objects_interacting = []
-            if i< len(self.object_data['start_frame']):
-                button_data['start_frame'] = self.object_data['start_frame'][i]
-                button_data['end_frame'] = self.object_data['end_frame'][i]
-                if self.object_data['inter_w_hand'][i] != None:
-                    for item in self.object_data['inter_w_hand'][i]:
-                        objects_interacting.append(item)
-                if self.object_data['inter_w_foot'][i] != None:
-                    for item in self.object_data['inter_w_foot'][i]:
-                        if item not in objects_interacting:
+            if self.object_data_bool:
+                if i< len(self.object_data['start_frame']):
+                    button_data['start_frame'] = self.object_data['start_frame'][i]
+                    button_data['end_frame'] = self.object_data['end_frame'][i]
+                    if self.object_data['inter_w_hand'][i] != None:
+                        for item in self.object_data['inter_w_hand'][i]:
                             objects_interacting.append(item)
+                    if self.object_data['inter_w_foot'][i] != None:
+                        for item in self.object_data['inter_w_foot'][i]:
+                            if item not in objects_interacting:
+                                objects_interacting.append(item)
+            
                 
 
             button_data['perc_in_vid'] = (peak_frame+1)/self.total_frames
             button_data['bad_joint'] = None
-            button_data['text'] = f"Reba score: {peak_val}. {problem_body_part[:-6]} in dangerous position. \nLook at interactions with the following objects: {objects_interacting} "
+            button_data['text'] = f"Reba score: {peak_val}. {[body_part[:-6] for body_part in problem_body_parts]} in dangerous position(s). \nLook at interactions with the following objects: {objects_interacting} "
             event_data[self.button_label + f'{i+1}'] = button_data
 
 
@@ -162,16 +170,19 @@ class VideoWidget():
 
 
     def find_problem_joint(self,peak_frame):
-        high_score = 0
-        high_body_part = None
+        high_perc = 0
+        high_body_parts = []
         for key in self.reba_data:
             if key[-5:] == 'score' and key[0] not in ['a','b','c']:
                 # print(key,self.reba_data[key][peak_frame],high_score)
-                if self.reba_data[key][peak_frame] > high_score:
-                    high_score = self.reba_data[key][peak_frame]
-                    high_body_part = key
+                score = self.reba_data[key][peak_frame]
+                perc = score/self.max_reba_scores_dict[key]
+                if perc > .5:
+                    high_perc = perc
+                    high_body_parts.append(key)
+                print('HERE',key,score,perc,high_perc,high_body_parts)
 
-        return high_body_part
+        return high_body_parts
 
     def format_time(self, seconds):
         minutes, seconds = divmod(seconds, 60)
@@ -180,9 +191,11 @@ class VideoWidget():
     def text_display_and_seek(self, button_data, button_number):
         if self.display != None:
             self.display.destroy()
-        perc = button_data[button_number]['perc_in_vid']
         peak_frame = button_data[button_number]['peak_frame']
-        start_frame = button_data[button_number]['start_frame']
+        if self.object_data_bool:
+            start_frame = button_data[button_number]['start_frame']
+        else:
+            start_frame = peak_frame
         self.seek_from_perc(start_frame)
         self.display = ttk.Label(self.output_frame, text=button_data[button_number]['text'], style="Custom.TLabel",font=("Helvetica", 30))
         self.display.pack()
@@ -308,10 +321,17 @@ if __name__ == "__main__":
     create_csv_from_data = True
     show_plots = False
 
-    new_video = False
-
+    
     # video_file_path = 'booker.mp4'
-    video_file_path = 'scan_video1_with_masks.avi'
+    video_file_path = 'videos/scan_video1_with_masks.avi'
+    # video_file_path = 'videos/setting_up_desk.mov'
+    # video_file_path = 'videos/opening_door.mov'
+    # video_file_path = 'videos/back_view_vacuum.mov'
+    # video_file_path = 'videos/front_view_vacuum.mov'
+    # video_file_path = 'videos/groceries.mov'
+
+    new_video = False
+    
     if new_video:
         gui_dataframe_output,peaks_dataframe,reba_data = reba_video_analyzer(video_file_path=video_file_path,
                         test=test,
@@ -320,10 +340,11 @@ if __name__ == "__main__":
                         camera_frames_per_second = 30,
                         create_csv_from_data = create_csv_from_data)
     else:
-        gui_dataframe_output = remake_dicts_from_csv('gui_peaks_dataframe.csv')
-        peaks_dataframe = remake_dicts_from_csv('peaks_dataframe.csv')
-        reba_data = remake_dicts_from_csv('reba_data.csv')
+        gui_dataframe_output = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_gui_peaks_dataframe.csv')
+        peaks_dataframe = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_peaks_dataframe.csv')
+        reba_data = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_reba_data.csv')
+        # object_data = remake_dicts_from_csv(video_file_path[7:-4]+'_object_data.csv')
     
-    widg = VideoWidget(gui_dataframe_output,peaks_dataframe,reba_data,video_file_path=video_file_path)
+    widg = VideoWidget(video_file_path,gui_dataframe_output,peaks_dataframe,reba_data,object_data=None)
     widg.run()
     # root.mainloop()
