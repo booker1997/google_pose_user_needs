@@ -232,13 +232,13 @@ if __name__ == "__main__":
     
     video_file_path = 'videos/scan_video1_with_masks.avi'
     gui_dataframe_output = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_gui_peaks_dataframe.csv')
-    peaks_dataframe = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_peaks_dataframe.csv')
+    total_dataframe = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_total_dataframe.csv')
     reba_data = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_reba_data.csv')
     object_data = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_object_data.csv')
     entry_list=[]
 
     # run the windows back to back
     root.mainloop()
-    video_window = VideoWidget(video_file_path,gui_dataframe_output,peaks_dataframe,reba_data,object_data=object_data)
+    video_window = VideoWidget(video_file_path,gui_dataframe_output,total_dataframe,reba_data,object_data=object_data)
     video_window.run()
     

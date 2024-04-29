@@ -13,7 +13,7 @@ from utils import remake_dicts_from_csv
 
 # print(peaks_dataframe)
 class VideoWidget():
-    def __init__(self,video_file_path, gui_dataframe_output,peaks_dataframe,reba_data,object_data=None,timer_callback=None):
+    def __init__(self,video_file_path, gui_dataframe_output,total_dataframe,reba_data,object_data=None,timer_callback=None):
         # self.root = tk.Tk()
         #style
         self.root = customtkinter.CTk()
@@ -47,7 +47,7 @@ class VideoWidget():
         self.display = None
 
         self.gui_dataframe_output = gui_dataframe_output
-        self.peaks_dataframe = peaks_dataframe
+        self.total_dataframe = total_dataframe
         self.reba_data=reba_data
         # print(self.peaks_dataframe['frame_of_max_peak'])
         # print(self.peaks_dataframe['frame_c_score'])
@@ -180,7 +180,6 @@ class VideoWidget():
                 if perc > .67:
                     high_perc = perc
                     high_body_parts.append(key)
-                print('HERE',key,score,perc,high_perc,high_body_parts)
 
         return high_body_parts
 
@@ -209,7 +208,7 @@ class VideoWidget():
             button_text = str(self.button_label + f"{button_counter}")
             # TO VERIFY INPUT
             # print(f"This is button {button_counter} with text {button_text} which should correspond to {data[button_text]}")
-            new_button = tk.Radiobutton(frame, bg="red", text=button_text, indicatoron=False, value=button_counter, variable=button, command=(lambda button_label=button_text: self.text_display_and_seek(data, button_label)), font=("Helvetica", 30))
+            new_button = tk.Radiobutton(frame, bg="red", text=button_text, indicatoron=False, value=button_counter, variable=button, command=(lambda button_label=button_text: self.text_display_and_seek(data, button_label)), font=("Helvetica", 10))
             new_button.pack(side="left", anchor="center")
             # new_button.grid(row=(button_counter + 5), column=0, pady=2)
             button_counter += 1
@@ -323,31 +322,39 @@ if __name__ == "__main__":
 
     
     # video_file_path = 'booker.mp4'
-    video_file_path = 'videos/scan_video1_with_masks.avi'
+    # video_file_path = 'videos/scan_video1_with_masks.avi'
     # video_file_path = 'videos/setting_up_desk.mov'
     # video_file_path = 'videos/opening_door.mov'
     # video_file_path = 'videos/back_view_vacuum.mov'
     # video_file_path = 'videos/front_view_vacuum.mov'
     # video_file_path = 'videos/groceries.mov'
+    # video_file_path = 'videos/vacuum_new.MOV'
+    # video_file_path = 'videos/groceries_jessica.mov'
+    video_file_path = 'videos/vacuum_gillian.mov'
+    # video_file_path = 'videos/setting_up_desk_behind.mov'
 
-    new_video = False
+    video_paths = ['videos/opening_door.mov','videos/groceries.mov','videos/setting_up_desk.mov','videos/back_view_vacuum.mov','videos/front_view_vacuum.mov']
+    # for video_file_path in video_paths:
+    new_video = True 
     
     if new_video:
-        gui_dataframe_output,peaks_dataframe,reba_data = reba_video_analyzer(video_file_path=video_file_path,
+        gui_dataframe_output,total_dataframe,reba_data = reba_video_analyzer(video_file_path=video_file_path,
                         test=test,
                         frontview=True,
                         show_plots=show_plots,
                         camera_frames_per_second = 30,
                         create_csv_from_data = create_csv_from_data)
+        object_data=None
     else:
         gui_dataframe_output = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_gui_peaks_dataframe.csv')
-        peaks_dataframe = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_peaks_dataframe.csv')
+        total_dataframe = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_total_dataframe.csv')
         reba_data = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_reba_data.csv')
         try:
             object_data = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_object_data.csv')
         except:
             object_data = None
+        object_data=None
     
-    widg = VideoWidget(video_file_path,gui_dataframe_output,peaks_dataframe,reba_data,object_data=object_data)
+    widg = VideoWidget(video_file_path,gui_dataframe_output,total_dataframe,reba_data,object_data=object_data)
     widg.run()
     # root.mainloop()
