@@ -1,0 +1,15 @@
+,start_frame,end_frame,start_sec,c_score,leg_score,trunk_score,neck_score,wrist_score,lower_arm_score,upper_arm_score,overall_interactions,inter_w_hand,inter_w_foot,inter_w_elbow,inter_w_knee,inter_w_shoulder
+0,270,359,9,9,2,4,2,2,2,5,"['bin', 'table', 'vacuum']","['bin', 'table', 'vacuum']",['vacuum'],['vacuum'],['vacuum'],['vacuum']
+1,570,659,19,10,3,4,2,2,2,5,"['bin', 'drawer', 'table', 'vacuum']",['vacuum'],"['bin', 'vacuum']",['vacuum'],"['bin', 'drawer', 'table']",['vacuum']
+2,990,1079,33,8,3,3,2,2,2,4,"['balled-socks', 'bin', 'table', 'vacuum']","['balled-socks', 'table', 'vacuum']",['bin'],"['bin', 'table', 'vacuum']",['bin'],
+3,1620,1709,54,9,3,4,2,2,2,4,"['balled-socks', 'paper-box', 'vacuum']","['balled-socks', 'paper-box', 'vacuum']","['balled-socks', 'vacuum']",['paper-box'],['vacuum'],
+4,2340,2429,78,9,3,4,2,2,2,4,"['balled-socks', 'paper-box', 'table', 'vacuum']","['balled-socks', 'paper-box', 'table', 'vacuum']",['balled-socks'],"['paper-box', 'table', 'vacuum']",['vacuum'],['vacuum']
+5,3150,3239,105,9,3,4,2,2,2,5,"['balled-socks', 'drawer', 'paper-box', 'table', 'vacuum']","['balled-socks', 'drawer', 'paper-box', 'vacuum']","['balled-socks', 'vacuum']","['paper-box', 'table', 'vacuum']","['balled-socks', 'paper-box', 'vacuum']",
+6,4050,4139,135,8,3,3,2,2,2,4,"['balled-socks', 'bin', 'table', 'vacuum']","['bin', 'vacuum']","['balled-socks', 'vacuum']","['bin', 'vacuum']","['balled-socks', 'vacuum']",['table']
+7,4890,4979,163,8,2,3,2,2,2,5,"['balled-socks', 'drawer', 'paper-box', 'vacuum']",,['balled-socks'],"['drawer', 'paper-box', 'vacuum']",,
+8,5700,5789,190,9,3,3,2,2,2,5,"['balled-socks', 'drawer', 'paper-box', 'table', 'vacuum']","['balled-socks', 'table', 'vacuum']","['drawer', 'paper-box']",['vacuum'],,
+9,6360,6449,212,10,3,4,2,2,2,5,"['balled-socks', 'drawer', 'paper-box', 'table', 'vacuum']","['balled-socks', 'drawer', 'paper-box', 'table', 'vacuum']","['balled-socks', 'table', 'vacuum']",['vacuum'],['vacuum'],
+10,6780,6869,226,10,3,4,2,2,2,5,"['balled-socks', 'drawer', 'paper-box', 'table', 'vacuum']","['balled-socks', 'table', 'vacuum']","['balled-socks', 'drawer', 'paper-box', 'table']",['vacuum'],,['vacuum']
+11,7260,7349,242,10,3,4,2,2,2,5,"['balled-socks', 'drawer', 'paper-box', 'table', 'vacuum']","['table', 'vacuum']","['balled-socks', 'drawer', 'paper-box', 'table', 'vacuum']","['table', 'vacuum']",['vacuum'],['vacuum']
+12,7560,7649,252,7,2,3,2,2,2,4,"['balled-socks', 'vacuum']","['balled-socks', 'vacuum']",['vacuum'],['vacuum'],['vacuum'],
+13,7890,7979,263,10,3,4,2,2,2,5,"['balled-socks', 'drawer', 'paper-box', 'table', 'vacuum']","['balled-socks', 'drawer', 'paper-box', 'table', 'vacuum']",['table'],"['drawer', 'paper-box', 'table']",['balled-socks'],

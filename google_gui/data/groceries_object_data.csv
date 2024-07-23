@@ -1,0 +1,7 @@
+,start_frame,end_frame,start_sec,c_score,leg_score,trunk_score,neck_score,wrist_score,lower_arm_score,upper_arm_score,interactions
+0,319,405,11,9,3,3,2,2,2,5,"['door', 'door-handle', 'fridge', 'paper-bag']"
+1,783,869,27,8,3,2,2,2,2,5,"['door', 'door-handle', 'fridge', 'paper-bag']"
+2,1015,1101,35,8,3,2,2,2,2,5,"['door', 'door-handle', 'fridge', 'paper-bag']"
+3,1276,1362,44,9,3,4,2,2,2,5,
+4,1798,1884,62,8,3,4,2,2,2,3,"['door', 'door-handle', 'fridge', 'paper-bag']"
+5,2059,2145,71,9,2,4,2,2,2,5,"['door', 'door-handle', 'fridge', 'paper-bag', 'table']"

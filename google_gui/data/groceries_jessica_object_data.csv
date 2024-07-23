@@ -1,0 +1,9 @@
+,start_frame,end_frame,start_sec,c_score,leg_score,trunk_score,neck_score,wrist_score,lower_arm_score,upper_arm_score,overall_interactions,inter_w_hand,inter_w_foot,inter_w_elbow,inter_w_knee,inter_w_shoulder
+0,60,149,2,8,3,3,2,2,2,3,"['bottle', 'paper-bag', 'snack', 'table']",['paper-bag'],"['bottle', 'paper-bag', 'snack', 'table']",,"['paper-bag', 'snack', 'table']",
+1,300,389,10,10,3,4,2,2,2,5,"['bottle', 'door', 'door-handle', 'paper-bag', 'refrigerator', 'snack']","['door', 'door-handle', 'paper-bag', 'refrigerator', 'snack']","['bottle', 'door', 'paper-bag', 'refrigerator', 'snack']","['door', 'door-handle', 'refrigerator']","['door', 'door-handle', 'paper-bag', 'refrigerator', 'snack']",
+2,600,689,20,8,2,3,2,2,2,5,"['door', 'door-handle', 'paper-bag', 'refrigerator', 'table']","['door', 'door-handle', 'paper-bag', 'refrigerator', 'table']",,,,
+3,1410,1499,47,8,3,3,2,2,2,4,"['bottle', 'door', 'door-handle', 'paper-bag', 'refrigerator', 'snack', 'table']","['bottle', 'door', 'door-handle', 'paper-bag', 'refrigerator', 'snack', 'table']",,"['bottle', 'paper-bag', 'refrigerator', 'snack']",,
+4,1800,1889,60,7,2,3,2,2,2,4,"['bottle', 'paper-bag', 'snack', 'table']","['bottle', 'paper-bag', 'snack']",['table'],"['bottle', 'paper-bag', 'snack']",['table'],
+5,2310,2399,77,8,3,4,2,2,2,4,"['bottle', 'paper-bag', 'snack', 'table']","['bottle', 'paper-bag', 'snack', 'table']",,['paper-bag'],['table'],
+6,2580,2669,86,8,3,3,2,2,2,4,"['bottle', 'paper-bag', 'snack', 'table']","['bottle', 'paper-bag', 'snack', 'table']",,['paper-bag'],,
+7,3420,3509,114,7,2,3,2,2,2,4,"['bottle', 'paper-bag', 'snack', 'table']","['bottle', 'paper-bag', 'snack']",,"['bottle', 'paper-bag']",['table'],

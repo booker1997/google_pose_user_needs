@@ -1,0 +1,18 @@
+Unnamed: 0,start_frame,end_frame,start_sec,c_score,leg_score,trunk_score,neck_score,wrist_score,lower_arm_score,upper_arm_score,overall_interactions,inter_w_hand,inter_w_foot,inter_w_elbow,inter_w_knee,inter_w_shoulder
+0,60,149,2,8,2,4,2,2,2,4,"['backpack', 'office-chair', 'table']","['office-chair', 'table']","['backpack', 'office-chair']",['office-chair'],"['backpack', 'office-chair']",
+1,330,419,11,9,3,3,2,2,2,5,"['monitor', 'office-chair', 'table']","['monitor', 'table']",['office-chair'],,['office-chair'],
+2,1380,1469,46,8,2,3,2,2,2,5,"['desktop', 'keyboard', 'monitor', 'paper-box', 'table']","['desktop', 'keyboard', 'monitor', 'table']",['paper-box'],"['desktop', 'monitor']",['paper-box'],"['desktop', 'monitor']"
+3,1710,1799,57,10,3,4,2,2,2,5,"['backpack', 'office-chair', 'paper-box', 'table']","['backpack', 'office-chair', 'paper-box', 'table']","['office-chair', 'paper-box']","['backpack', 'office-chair', 'paper-box']","['office-chair', 'paper-box']",
+4,1980,2069,66,9,3,4,2,2,2,4,"['office-chair', 'paper-box']",['paper-box'],['office-chair'],['office-chair'],['office-chair'],['office-chair']
+5,2340,2429,78,10,3,4,2,2,2,5,"['backpack', 'paper-box', 'table']","['backpack', 'table']",['paper-box'],['backpack'],['paper-box'],['table']
+6,2760,2849,92,10,3,4,2,2,2,5,"['backpack', 'paper-box', 'table']","['backpack', 'paper-box', 'table']","['backpack', 'paper-box']",['table'],"['paper-box', 'table']",['table']
+7,3180,3269,106,9,3,3,2,2,2,5,"['backpack', 'desktop', 'keyboard', 'monitor', 'office-chair', 'table']","['desktop', 'keyboard', 'monitor', 'table']","['backpack', 'office-chair']","['keyboard', 'table']",['office-chair'],
+8,3900,3989,130,9,3,4,2,2,2,4,"['backpack', 'desktop', 'keyboard', 'monitor', 'office-chair', 'table']",['table'],"['backpack', 'office-chair']","['keyboard', 'table']",['office-chair'],"['desktop', 'monitor']"
+9,4290,4379,143,7,2,3,2,2,2,4,"['desktop', 'monitor', 'office-chair']","['desktop', 'monitor']",['office-chair'],"['desktop', 'monitor']",['office-chair'],"['desktop', 'monitor']"
+10,5070,5159,169,10,3,4,2,2,2,5,"['office-chair', 'paper-box', 'table']","['office-chair', 'paper-box', 'table']","['office-chair', 'paper-box']",['table'],"['office-chair', 'paper-box']",['table']
+11,5400,5489,180,10,3,4,2,2,2,5,"['office-chair', 'paper-box', 'table']","['office-chair', 'paper-box', 'table']","['office-chair', 'paper-box']","['paper-box', 'table']","['office-chair', 'paper-box']",['table']
+12,6000,6089,200,10,3,4,2,2,2,5,"['office-chair', 'paper-box', 'table']","['office-chair', 'paper-box', 'table']","['office-chair', 'paper-box']",['paper-box'],"['paper-box', 'table']",
+13,6960,7049,232,9,3,4,2,2,2,5,"['office-chair', 'paper-box', 'table']","['paper-box', 'table']","['office-chair', 'paper-box']","['paper-box', 'table']","['office-chair', 'paper-box']",['table']
+14,7230,7319,241,10,3,4,2,2,2,5,"['office-chair', 'paper-box', 'table']","['office-chair', 'paper-box', 'table']",['paper-box'],"['office-chair', 'paper-box', 'table']","['office-chair', 'paper-box']",['table']
+15,8190,8279,273,8,2,3,2,2,2,5,"['desktop', 'keyboard', 'monitor', 'paper-box', 'table']","['desktop', 'keyboard', 'monitor']",['table'],"['desktop', 'monitor']","['paper-box', 'table']","['desktop', 'monitor']"
+16,8460,8549,282,8,2,3,2,2,2,5,"['desktop', 'keyboard', 'monitor']","['desktop', 'keyboard', 'monitor']",,"['desktop', 'monitor']",,"['desktop', 'monitor']"
