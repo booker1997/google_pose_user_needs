@@ -17,18 +17,19 @@ def reba_video_analyzer(video_file_path=None,test=False,frontview=True,show_plot
         # input_video_name = 'booker_test.MOV'
         # input_video_name = 'reba_test_videos/low_score/low_score.MOV'
         # input_video_name = 'reba_test_videos/medium_score/medium_score.MOV'
-        input_video_name = 'reba_test_videos/high_score/v2/high_score_v2.MOV'
+        input_video_path = 'reba_test_videos/high_score/v2/high_score_v2.MOV'
         give_processing_updates_time = 5
     else:
-        input_video_name = video_file_path
-        give_processing_updates_time = 5
+        input_video_path = video_file_path
+        give_processing_updates_time = 30
 
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
+   
 
     pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
     # print(sys.argv)
-    cap = cv2.VideoCapture(input_video_name)
+    cap = cv2.VideoCapture(input_video_path)
     if cap.isOpened() == False:
         print("Error opening video stream or file")
         raise TypeError
@@ -40,7 +41,7 @@ def reba_video_analyzer(video_file_path=None,test=False,frontview=True,show_plot
     #     '/')+1], sys.argv[1][sys.argv[1].rfind('/')+1:]
     # inflnm, inflext = inputflnm.split('.')
     print('working on video...')
-    out_filename = input_video_name[:-4] +'_annotated.avi' #f'{outdir}{inflnm}_annotated.{inflext}'
+    out_filename = input_video_path[:-4] +'_annotated.avi' #f'{outdir}{inflnm}_annotated.{inflext}'
     out = cv2.VideoWriter(out_filename, cv2.VideoWriter_fourcc(
         'M', 'J', 'P', 'G'), 10, (frame_width, frame_height))
 
@@ -348,8 +349,8 @@ def reba_video_analyzer(video_file_path=None,test=False,frontview=True,show_plot
 
     #Post process and create peaks dataframe
 
-    max_reba_c = max(c_results)
-    find_peaks_above = 6
+    # max_reba_c = max(c_results)
+    find_peaks_above = 7
     dist_between_peeks = 250
     all_peaks_i,peak_props = find_peaks(c_results,height=find_peaks_above,distance=dist_between_peeks)
     print(all_peaks_i,peak_props)
@@ -359,7 +360,6 @@ def reba_video_analyzer(video_file_path=None,test=False,frontview=True,show_plot
     
     frames_to_include_around_peaks = 10
     peaks_dict = {}
-    frames_by_peaks = np.array([])
     for i in all_peaks_i:
         if i>frames_to_include_around_peaks:
             start = i-frames_to_include_around_peaks
@@ -370,14 +370,14 @@ def reba_video_analyzer(video_file_path=None,test=False,frontview=True,show_plot
             start = i-round(frames_to_include_around_peaks/2)
             end = i+round(frames_to_include_around_peaks/2)
             peaks_dict[i] = np.arange(start,end)
-    peaks_dataframe = {}
+    total_dataframe = {}
     reba_angles_dataframe_keys_reversed = list(reba_angles_dataframe.keys())
     reba_angles_dataframe_keys_reversed.reverse()
     create_init_list = True
     create_init_coords = True
     create_init_list_angles = True
-    for i,peak_i in enumerate(peaks_dict):
-        peak_val = peak_mags[i]
+    for frame,c_score in enumerate(reba_angles_dataframe['c_score']):
+        peak_val = c_score
         if peak_val == 1:
             max_risk_level = 'No Risk'
         elif 2 <= peak_val <= 3:
@@ -388,40 +388,38 @@ def reba_video_analyzer(video_file_path=None,test=False,frontview=True,show_plot
             max_risk_level = 'High Risk'
         else:
             max_risk_level = 'Very High Risk'
-        for frame in peaks_dict[peak_i]:
-            if create_init_list:
-                peaks_dataframe['frame_id'] = [frame]
-                peaks_dataframe['frame_of_max_peak'] = [peak_i]
-                peaks_dataframe['frame_c_score'] = [reba_angles_dataframe['c_score'][frame]]
-                peaks_dataframe['peak_risk_level'] = [max_risk_level]
-                create_init_list = False
+        
+        if create_init_list:
+            total_dataframe['frame_id'] = [frame]
+            total_dataframe['frame_c_score'] = [c_score]
+            total_dataframe['peak_risk_level'] = [max_risk_level]
+            create_init_list = False
+        else:
+            if frame== len(reba_angles_dataframe['c_score']):
+                break
+            total_dataframe['frame_id'].append(frame)
+            total_dataframe['frame_c_score'].append(c_score)
+            total_dataframe['peak_risk_level'].append(max_risk_level)
+        for joint_name in final_results_dict:
+            if create_init_coords:
+                total_dataframe[joint_name + '_frame_x'] = [final_results_dict[joint_name]['x_frame'][frame]]
+                total_dataframe[joint_name + '_frame_y'] = [final_results_dict[joint_name]['y_frame'][frame]]
+                total_dataframe[joint_name + '_frame_z_norm'] = [final_results_dict[joint_name]['z_frame'][frame]]
+                total_dataframe[joint_name + '_visibility'] = [final_results_dict[joint_name]['visibility'][frame]]
+                
             else:
-                if frame== len(reba_angles_dataframe['c_score']):
-                    break
-                peaks_dataframe['frame_id'].append(frame)
-                peaks_dataframe['frame_of_max_peak'].append(peak_i)
-                peaks_dataframe['frame_c_score'].append(reba_angles_dataframe['c_score'][frame])
-                peaks_dataframe['peak_risk_level'].append(max_risk_level)
-            for joint_name in final_results_dict:
-                if create_init_coords:
-                    peaks_dataframe[joint_name + '_frame_x'] = [final_results_dict[joint_name]['x_frame'][frame]]
-                    peaks_dataframe[joint_name + '_frame_y'] = [final_results_dict[joint_name]['y_frame'][frame]]
-                    peaks_dataframe[joint_name + '_frame_z_norm'] = [final_results_dict[joint_name]['z_frame'][frame]]
-                    peaks_dataframe[joint_name + '_visibility'] = [final_results_dict[joint_name]['visibility'][frame]]
-                    
-                else:
-                    peaks_dataframe[joint_name + '_frame_x'].append(final_results_dict[joint_name]['x_frame'][frame])
-                    peaks_dataframe[joint_name + '_frame_y'].append(final_results_dict[joint_name]['y_frame'][frame])
-                    peaks_dataframe[joint_name + '_frame_z_norm'].append(final_results_dict[joint_name]['z_frame'][frame])
-                    peaks_dataframe[joint_name + '_visibility'].append(final_results_dict[joint_name]['visibility'][frame])
-            create_init_coords = False
-                    
-            for data_key in reba_angles_dataframe_keys_reversed:
-                if create_init_list_angles:
-                    peaks_dataframe[data_key] = [reba_angles_dataframe[data_key][frame]]
-                else:
-                    peaks_dataframe[data_key].append(reba_angles_dataframe[data_key][frame])
-            create_init_list_angles = False
+                total_dataframe[joint_name + '_frame_x'].append(final_results_dict[joint_name]['x_frame'][frame])
+                total_dataframe[joint_name + '_frame_y'].append(final_results_dict[joint_name]['y_frame'][frame])
+                total_dataframe[joint_name + '_frame_z_norm'].append(final_results_dict[joint_name]['z_frame'][frame])
+                total_dataframe[joint_name + '_visibility'].append(final_results_dict[joint_name]['visibility'][frame])
+        create_init_coords = False
+                
+        for data_key in reba_angles_dataframe_keys_reversed:
+            if create_init_list_angles:
+                total_dataframe[data_key] = [reba_angles_dataframe[data_key][frame]]
+            else:
+                total_dataframe[data_key].append(reba_angles_dataframe[data_key][frame])
+        create_init_list_angles = False
 
     #Make subplots for visualization 
     if show_plots:
@@ -478,21 +476,21 @@ def reba_video_analyzer(video_file_path=None,test=False,frontview=True,show_plot
 
     # write to csv or return output
     if create_csv_from_data:
-        total_dataframe = pd.DataFrame(data=reba_angles_dataframe)
-        total_dataframe.to_csv('reba_data.csv')
+        reba_angles_dataframe = pd.DataFrame(data=reba_angles_dataframe)
+        reba_angles_dataframe.to_csv('data/'+input_video_path[7:-4]+ '_reba_data.csv')
 
         gui_dataframe_output = pd.DataFrame(data=gui_peaks_dataframe)
-        gui_dataframe_output.to_csv('gui_peaks_dataframe.csv')
+        gui_dataframe_output.to_csv('data/'+input_video_path[7:-4]+ '_gui_peaks_dataframe.csv')
 
-        dataframe_output = pd.DataFrame(data=peaks_dataframe)
-        dataframe_output.to_csv('peaks_dataframe.csv')
+        total_dataframe = pd.DataFrame(data=total_dataframe)
+        total_dataframe.to_csv('data/'+input_video_path[7:-4]+ '_total_dataframe.csv')
 
         ikea_threed_dataframe = pd.DataFrame(data=final_results_dict)
-        ikea_threed_dataframe.to_csv('3D_data_ikea.csv')
+        ikea_threed_dataframe.to_csv('data/'+input_video_path[7:-4]+ '_3D_data_ikea.csv')
 
-        return gui_peaks_dataframe,peaks_dataframe,reba_angles_dataframe
+        return gui_peaks_dataframe,total_dataframe,reba_angles_dataframe
     else:
-        return gui_peaks_dataframe,peaks_dataframe,reba_angles_dataframe
+        return gui_peaks_dataframe,total_dataframe,reba_angles_dataframe
 
 
     

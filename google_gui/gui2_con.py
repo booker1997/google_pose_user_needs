@@ -4,7 +4,7 @@ from tkinter import ttk
 import customtkinter
 import time
 import threading
-from widgets import *
+from widgets_leah import *
 
 # customtkinter.set_appearance_mode("dark")
 
@@ -63,7 +63,7 @@ class ExperimentGUI:
         # title = ttk.Label(self.start_frame, text="Welcome to the Experiment!", font=("Arial", 25), justify=tk.CENTER)
         # title.grid(row=0, column=0, pady=10)
 
-        label = ttk.Label(self.start_frame, text="For the next 15 minutes, please continue to observe the video " + 
+        label = ttk.Label(self.start_frame, text="For the next 10 minutes, please continue to observe the video " + 
                           "and add more user needs to your list. Identify as many needs as possible and try " + 
                           "to go beyond the obvious needs. \n", font=("Arial", 25), wraplength=1400)
         label.grid(row=0, column=0, pady=10)
@@ -238,12 +238,17 @@ if __name__ == "__main__":
     #####VIDEO SHOULD *NOT* BE ANNOTATED
     # video_file_path = 'videos/scan_video1_with_masks_annotated.avi'
     # video_file_path = 'videos/opening_door_annotated.avi'
-    video_file_path = 'videos/setting_up_desk.mov'
+    # video_file_path = 'videos/setting_up_desk.mov'
+
+    # video_file_path = 'videos/setting_up_desk_behind.mov'
+    video_file_path = 'videos/vacuum_gillian.mov'
+    # video_file_path = 'videos/groceries_jessica.mov'
 
     gui_dataframe_output = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_gui_peaks_dataframe.csv')
-    peaks_dataframe = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_peaks_dataframe.csv')
+    total_dataframe = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_total_dataframe.csv')
     reba_data = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_reba_data.csv')
     object_data = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_object_data.csv')
+
     count=2
     condition=1
     entry_list=[]
@@ -251,7 +256,7 @@ if __name__ == "__main__":
     # Run the windows back to back
     root.mainloop()
 
-    video_window = VideoWidget(video_file_path, gui_dataframe_output, peaks_dataframe, reba_data, count, condition, object_data=object_data)
+    video_window = VideoWidget(video_file_path, gui_dataframe_output,total_dataframe,reba_data,count, condition, object_data=object_data)
     video_window.run()
 
     # root = customtkinter.CTk()

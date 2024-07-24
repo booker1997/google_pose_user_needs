@@ -4,7 +4,7 @@ from tkinter import ttk
 import customtkinter
 import time
 import threading
-from widgets import *
+from widgets_leah import *
 
 # customtkinter.set_appearance_mode("dark")
 
@@ -65,10 +65,10 @@ class ExperimentGUI:
 
         label = ttk.Label(self.start_frame, text="In this experiment, you will be given a video of a person performing an activity. " +
                           "The video will be about 5-minutes long. \n\nYour task is to observe this video and identify the needs of the person in the video." +
-                          " Identify as many needs as possible and try to go beyond the obvious needs. You will have total 30 minutes for the task. After" +
-                          " the first 15 minutes of observing and identifying the needs on your own, you will get a 3-minute break. After the break, you will"+
+                          " Identify as many needs as possible and try to go beyond the obvious needs. You will have total 20 minutes for the task. After" +
+                          " the first 10 minutes of observing and identifying the needs on your own, you will get a 3-minute break. After the break, you will"+
                           " receive video analysis results from an AI-based observer tool. The tool analyzes the pose of the user and its relationship to the objects in the video"+
-                          " to help you identify their needs further. You will be asked to utilize these analysis results and continue to identify the needs in the final 15 minutes."+ 
+                          " to help you identify their needs further. You will be asked to utilize these analysis results and continue to identify the needs in the final 10 minutes."+ 
                           "\n\nIf you have any questions regarding the experiment," +
                           " you may ask the researchers now. If you are ready to begin the task, please click Start. \n", font=("Arial", 25), wraplength=1400)
         label.grid(row=1, column=0, pady=5)
@@ -78,8 +78,8 @@ class ExperimentGUI:
 
     def part1_instruction(self):
         self.screen_1_frame = ttk.Frame(self.root, padding="50", width=1400)
-        label = ttk.Label(self.screen_1_frame, text="For the next 15 minutes, you will be asked to observe a given video and identify as many needs of the person in the video as possible."+
-                          " We encourage you to try to go beyond the obvious needs. \n\n15 minutes will begin when you click Next.", font=("Arial", 25), wraplength=1400)
+        label = ttk.Label(self.screen_1_frame, text="For the next 10 minutes, you will be asked to observe a given video and identify as many needs of the person in the video as possible."+
+                          " We encourage you to try to go beyond the obvious needs. \n\n10 minutes will begin when you click Next.", font=("Arial", 25), wraplength=1400)
         label.grid(row=0, column=0, pady=20)
 
         # next_button = customtkinter.CTkButton(self.screen_1_frame, text="Next", command=self.show_screen_2, corner_radius=0)
@@ -243,20 +243,28 @@ if __name__ == "__main__":
     ##### VIDEO SHOULD *NOT* BE ANNOTATED
     # video_file_path = 'videos/scan_video1_with_masks.avi'
     # video_file_path = 'videos/opening_door.avi'
-    video_file_path = 'videos/setting_up_desk.mov'
+    # video_file_path = 'videos/setting_up_desk.mov'
 
+    # video_file_path = 'videos/setting_up_desk_behind.mov'
+    video_file_path = 'videos/vacuum_gillian.mov'
+    # video_file_path = 'videos/groceries_jessica.mov'
     gui_dataframe_output = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_gui_peaks_dataframe.csv')
-    peaks_dataframe = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_peaks_dataframe.csv')
+    total_dataframe = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_total_dataframe.csv')
     reba_data = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_reba_data.csv')
     object_data = remake_dicts_from_csv('data/'+video_file_path[7:-4]+'_object_data.csv')
+
+
+
+   
+
     count=1
-    condition=2
+    condition=1
     entry_list=[]
 
     # Run the windows back to back
     root.mainloop()
 
-    video_window = VideoWidget(video_file_path, gui_dataframe_output, peaks_dataframe, reba_data, count, condition, object_data=object_data)
+    video_window = VideoWidget(video_file_path, gui_dataframe_output,total_dataframe,reba_data,count, condition, object_data=object_data)
     video_window.run()
 
     # root = customtkinter.CTk()
